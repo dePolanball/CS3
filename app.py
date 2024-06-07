@@ -143,7 +143,9 @@ if os.path.exists(audio_file_path):
 
     if st.session_state.current_event_index > 0:
         current_event = events[st.session_state.current_event_index - 1]
-        st.markdown("### " + current_event['script_var'] + "\n\n" + scripts[current_event['script_var']])
+        st.markdown("### " + current_event['script_var'] + "
+
+" + scripts[current_event['script_var']])
 
     # After audio ends, show a selection box for the user
     if elapsed_time >= duration:
