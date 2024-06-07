@@ -3,6 +3,7 @@ import time
 import os
 import plotly.graph_objects as go
 from datetime import date
+from io import BytesIO
 
 # Define analysis data with placeholder timings for when emotions and scripts should pop up
 analysis_data = {
@@ -85,7 +86,7 @@ def create_gauge(alert_type):
         "Orange": 4,
         "Red": 5
     }[alert_type]
-    
+
     fig = go.Figure(go.Indicator(
         mode="gauge+number",
         value=gauge_value,
@@ -102,10 +103,7 @@ def create_gauge(alert_type):
         }
     ))
 
-    buf = BytesIO()
-    fig.write_image(buf, format="png")
-    buf.seek(0)
-    return buf
+    return fig
 
 # Streamlit app
 st.title("Customer Service Audio Analysis")
@@ -130,8 +128,7 @@ if os.path.exists(audio_file_path):
     current_event_index = 0
 
     # Initialize dynamic gauge
-    gauge_img = create_gauge(events[0]["alert"])
-    gauge_placeholder = st.image(gauge_img, caption="Conversation Dynamic")
+    gauge_placeholder = st.empty()
     table_placeholder = st.empty()
     script_placeholder = st.empty()
 
@@ -146,8 +143,8 @@ if os.path.exists(audio_file_path):
         elapsed_time = time.time() - start_time
         if current_event_index < len(events) and elapsed_time >= events[current_event_index]["time"]:
             event = events[current_event_index]
-            gauge_img = create_gauge(event["alert"])
-            gauge_placeholder.image(gauge_img, caption="Conversation Dynamic")
+            gauge_fig = create_gauge(event["alert"])
+            gauge_placeholder.plotly_chart(gauge_fig, use_container_width=True)
 
             # Update table with the current event
             visible_table_data.append([time.strftime("%M:%S", time.gmtime(event["time"])), event["alert"], event["script_var"]])
@@ -167,7 +164,3 @@ if os.path.exists(audio_file_path):
 
 else:
     st.error(f"File {audio_file_path} not found.")
-'''
-
-with open('app.py', 'w') as f:
-    f.write(app_content)
