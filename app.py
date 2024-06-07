@@ -1,96 +1,107 @@
 
 import streamlit as st
-import os
 import time
-from datetime import date
+import os
+import matplotlib.pyplot as plt
+from io import BytesIO
 
 # Define analysis data with placeholder timings for when emotions and scripts should pop up
 analysis_data = {
-    "audio_0.wav": {
-        "Duration": 1 * 60 + 39,  # Duration in seconds (1:39)
-        "Events": [
-            {"time": 15, "alert": "Green", "script_var": "Script A"},
-            {"time": 60, "alert": "Light Green", "script_var": "Script B"},
-            {"time": 90, "alert": "Light Green", "script_var": "Script B"},
-            {"time": 120, "alert": "Light Green", "script_var": "Script B"},
-            {"time": 135, "alert": "Light Green", "script_var": "Script B"}
+    'audio_0.wav': {
+        'Duration': 1 * 60 + 39,  # Duration in seconds (1:39)
+        'Events': [
+            {'time': 15, 'alert': 'Green', 'script_var': 'Script A'},
+            {'time': 60, 'alert': 'Light Green', 'script_var': 'Script B'},
+            {'time': 90, 'alert': 'Yellow', 'script_var': 'Script C'},
+            {'time': 120, 'alert': 'Orange', 'script_var': 'Script D'},
+            {'time': 135, 'alert': 'Red', 'script_var': 'Script E'}
         ],
-        "Scripts": {
-            "Script A": "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
-            "Script B": "Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
-            "Script C": "Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris.",
-            "Script D": "Nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor.",
-            "Script E": "In reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur."
+        'Scripts': {
+            'Script A': 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
+            'Script B': 'Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
+            'Script C': 'Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris.',
+            'Script D': 'Nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor.',
+            'Script E': 'In reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.'
         }
     },
-    "audio_1.wav": {
-        "Duration": 8 * 60 + 37,  # Duration in seconds (8:37)
-        "Events": [
-            {"time": 15, "alert": "Red", "script_var": "Script E"},
-            {"time": 42, "alert": "Yellow", "script_var": "Script C"},
-            {"time": 186.6, "alert": "Light Green", "script_var": "Script B"},
-            {"time": 425.4, "alert": "Green", "script_var": "Script A"},
-            {"time": 600, "alert": "Green", "script_var": "Script A"}
+    'audio_1.wav': {
+        'Duration': 8 * 60 + 37,  # Duration in seconds (8:37)
+        'Events': [
+            {'time': 21, 'alert': 'Green', 'script_var': 'Script A'},
+            {'time': 120, 'alert': 'Light Green', 'script_var': 'Script B'},
+            {'time': 300, 'alert': 'Yellow', 'script_var': 'Script C'},
+            {'time': 480, 'alert': 'Orange', 'script_var': 'Script D'},
+            {'time': 600, 'alert': 'Red', 'script_var': 'Script E'}
         ],
-        "Scripts": {
-            "Script A": "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
-            "Script B": "Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
-            "Script C": "Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris.",
-            "Script D": "Nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor.",
-            "Script E": "In reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur."
+        'Scripts': {
+            'Script A': 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
+            'Script B': 'Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
+            'Script C': 'Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris.',
+            'Script D': 'Nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor.',
+            'Script E': 'In reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.'
         }
     },
-    "audio_2.wav": {
-        "Duration": 4 * 60 + 22,  # Duration in seconds (4:22)
-        "Events": [
-            {"time": 30, "alert": "Green", "script_var": "Script A"},
-            {"time": 90, "alert": "Light Green", "script_var": "Script B"},
-            {"time": 150, "alert": "Yellow", "script_var": "Script C"},
-            {"time": 210, "alert": "Orange", "script_var": "Script D"},
-            {"time": 250, "alert": "Red", "script_var": "Script E"}
+    'audio_2.wav': {
+        'Duration': 4 * 60 + 22,  # Duration in seconds (4:22)
+        'Events': [
+            {'time': 30, 'alert': 'Green', 'script_var': 'Script A'},
+            {'time': 90, 'alert': 'Light Green', 'script_var': 'Script B'},
+            {'time': 150, 'alert': 'Yellow', 'script_var': 'Script C'},
+            {'time': 210, 'alert': 'Orange', 'script_var': 'Script D'},
+            {'time': 250, 'alert': 'Red', 'script_var': 'Script E'}
         ],
-        "Scripts": {
-            "Script A": "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
-            "Script B": "Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
-            "Script C": "Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris.",
-            "Script D": "Nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor.",
-            "Script E": "In reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur."
+        'Scripts': {
+            'Script A': 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
+            'Script B': 'Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
+            'Script C': 'Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris.',
+            'Script D': 'Nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor.',
+            'Script E': 'In reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.'
         }
     },
-    "audio_3.wav": {
-        "Duration": 2 * 60 + 45,  # Duration in seconds (2:45)
-        "Events": [
-            {"time": 25, "alert": "Green", "script_var": "Script A"},
-            {"time": 60, "alert": "Light Green", "script_var": "Script B"},
-            {"time": 90, "alert": "Yellow", "script_var": "Script C"},
-            {"time": 120, "alert": "Orange", "script_var": "Script D"},
-            {"time": 150, "alert": "Red", "script_var": "Script E"}
+    'audio_3.wav': {
+        'Duration': 2 * 60 + 45,  # Duration in seconds (2:45)
+        'Events': [
+            {'time': 25, 'alert': 'Green', 'script_var': 'Script A'},
+            {'time': 60, 'alert': 'Light Green', 'script_var': 'Script B'},
+            {'time': 90, 'alert': 'Yellow', 'script_var': 'Script C'},
+            {'time': 120, 'alert': 'Orange', 'script_var': 'Script D'},
+            {'time': 150, 'alert': 'Red', 'script_var': 'Script E'}
         ],
-        "Scripts": {
-            "Script A": "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
-            "Script B": "Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
-            "Script C": "Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris.",
-            "Script D": "Nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor.",
-            "Script E": "In reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur."
+        'Scripts': {
+            'Script A': 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
+            'Script B': 'Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
+            'Script C': 'Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris.',
+            'Script D': 'Nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor.',
+            'Script E': 'In reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.'
         }
     }
 }
 
-# Function to create lights
-def create_lights(alert_type):
-    colors = {"Green": "#00FF00", "Light Green": "#ADFF2F", "Yellow": "#FFFF00", "Orange": "#FFA500", "Red": "#FF0000"}
-    light_colors = ["#D3D3D3"] * 5
-    if alert_type == "Green":
-        light_colors[0] = colors[alert_type]
-    elif alert_type == "Light Green":
-        light_colors[1] = colors[alert_type]
-    elif alert_type == "Yellow":
-        light_colors[2] = colors[alert_type]
-    elif alert_type == "Orange":
-        light_colors[3] = colors[alert_type]
-    elif alert_type == "Red":
-        light_colors[4] = colors[alert_type]
-    return light_colors
+# Function to create a dynamic gauge
+def create_gauge(alert_type):
+    fig, ax = plt.subplots()
+
+    labels = ['Green', 'Light Green', 'Yellow', 'Orange', 'Red']
+    colors = ['#00FF00', '#ADFF2F', '#FFFF00', '#FFA500', '#FF0000']
+    ranges = [1, 1, 1, 1, 1]
+    start = 0
+
+    for label, color, r in zip(labels, colors, ranges):
+        ax.barh(0, r, left=start, color=color)
+        start += r
+
+    needle_pos = labels.index(alert_type) + 0.5
+    ax.barh(0, 0.05, left=needle_pos, color='black')
+
+    ax.set_yticks([])
+    ax.set_xticks([])
+    ax.set_xlim(0, sum(ranges))
+    ax.set_frame_on(False)
+
+    buf = BytesIO()
+    plt.savefig(buf, format="png")
+    buf.seek(0)
+    return buf
 
 # Streamlit app
 st.title("Customer Service Audio Analysis")
@@ -107,52 +118,45 @@ audio_file_path = os.path.join(audio_path, selected_audio)
 if os.path.exists(audio_file_path):
     st.audio(audio_file_path)
 
-    duration = analysis_data[selected_audio]["Duration"]
-    events = analysis_data[selected_audio]["Events"]
-    scripts = analysis_data[selected_audio]["Scripts"]
+    if st.button('Start Audio and Show Events'):
+        duration = analysis_data[selected_audio]['Duration']
+        events = analysis_data[selected_audio]['Events']
+        scripts = analysis_data[selected_audio]['Scripts']
 
-    # Initialize dynamic lights
-    if "start_time" not in st.session_state:
-        st.session_state.start_time = time.time()
-        st.session_state.current_event_index = 0
-        st.session_state.visible_table_data = []
-        st.session_state.light_colors = ["#D3D3D3"] * 5
+        start_time = time.time()
+        current_event_index = 0
 
-    elapsed_time = time.time() - st.session_state.start_time
+        # Initialize dynamic gauge
+        gauge_placeholder = st.empty()
+        table_placeholder = st.empty()
+        script_placeholder = st.empty()
 
-    if st.session_state.current_event_index < len(events) and elapsed_time >= events[st.session_state.current_event_index]["time"]:
-        event = events[st.session_state.current_event_index]
-        st.session_state.light_colors = create_lights(event["alert"])
+        # Table of timestamps, alert types, and script variables
+        table_data = []
+        for event in events:
+            table_data.append((time.strftime("%M:%S", time.gmtime(event['time'])), event['alert'], event['script_var']))
 
-        # Update table with the current event
-        st.session_state.visible_table_data.append([time.strftime("%M:%S", time.gmtime(event["time"])), event["alert"], event["script_var"]])
-        st.session_state.current_event_index += 1
+        table_placeholder.table(table_data)
 
-    st.markdown(
-        "<div style='text-align: center;'>"
-        "<span style='background-color: " + st.session_state.light_colors[0] + "; padding: 15px 30px; margin: 5px;'></span>"
-        "<span style='background-color: " + st.session_state.light_colors[1] + "; padding: 15px 30px; margin: 5px;'></span>"
-        "<span style='background-color: " + st.session_state.light_colors[2] + "; padding: 15px 30px; margin: 5px;'></span>"
-        "<span style='background-color: " + st.session_state.light_colors[3] + "; padding: 15px 30px; margin: 5px;'></span>"
-        "<span style='background-color: " + st.session_state.light_colors[4] + "; padding: 15px 30px; margin: 5px;'></span>"
-        "</div>", 
-        unsafe_allow_html=True
-    )
+        while time.time() - start_time < duration:
+            elapsed_time = time.time() - start_time
+            if current_event_index < len(events) and elapsed_time >= events[current_event_index]['time']:
+                event = events[current_event_index]
+                gauge_img = create_gauge(event['alert'])
+                gauge_placeholder.image(gauge_img, caption='Conversation Dynamic')
 
-    st.table(st.session_state.visible_table_data)
+                table_data[current_event_index] = (
+                    time.strftime("%M:%S", time.gmtime(event['time'])),
+                    f"**{event['alert']}**",
+                    f"[{event['script_var']}]({event['script_var']})"
+                )
 
-    if st.session_state.current_event_index > 0:
-        current_event = events[st.session_state.current_event_index - 1]
-        st.markdown("### " + current_event['script_var'] + "\n\n" + scripts[current_event['script_var']])
+                table_placeholder.table(table_data)
+                script_placeholder.markdown(f"### {event['script_var']}
 
-    # After audio ends, show a selection box for the user
-    if elapsed_time >= duration:
-        st.write("### Select the outcome of this audio:")
-        outcome = st.selectbox("Outcome", ["Resolved", "Unresolved", "Revert by"])
+{scripts[event['script_var']]}")
 
-        if outcome == "Revert by":
-            revert_date = st.date_input("Select a date to revert by", min_value=date.today())
-            st.write("Revert by date:", revert_date)
-
+                current_event_index += 1
+            time.sleep(1)
 else:
-    st.error("File " + audio_file_path + " not found.")
+    st.error(f"File {audio_file_path} not found.")
