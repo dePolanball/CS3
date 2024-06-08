@@ -115,6 +115,7 @@ audio_base_url = "https://raw.githubusercontent.com/dePolanball/CS3/main/voices/
 
 # Check if file exists and play audio
 audio_file_url = f"{audio_base_url}{selected_audio}"
+st.write(f"Loading audio from: {audio_file_url}")  # Debug statement to check the URL
 st.audio(audio_file_url)
 
 duration = analysis_data[selected_audio]["Duration"]
