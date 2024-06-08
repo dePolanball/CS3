@@ -1,3 +1,19 @@
+# Install necessary packages
+!pip install streamlit requests plotly
+
+# Clone the GitHub repository using personal access token
+token = "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@github.com"
+username = "dePolanball"
+repo_name = "CS3"
+
+!git clone https://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@github.com/dePolanball/CS3.git
+
+# Change directory to the cloned repository
+import os
+os.chdir(repo_name)
+
+# Create app.py file with the provided code
+app_code = """
 import streamlit as st
 import time
 import plotly.graph_objects as go
@@ -173,3 +189,9 @@ if download_audio(audio_file_url, selected_audio):
         st.write("Revert by date:", revert_date)
 else:
     st.error("Failed to load the audio file.")
+"""
+with open("app.py", "w") as f:
+    f.write(app_code)
+
+# Run the Streamlit app
+!streamlit run app.py &>/dev/null &
