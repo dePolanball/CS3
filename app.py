@@ -146,7 +146,7 @@ while time.time() - start_time < duration:
         # Update table with the current event
         visible_table_data.append([time.strftime("%M:%S", time.gmtime(event["time"])), event["alert"], event["script_var"]])
         table_placeholder.table(visible_table_data)
-        script_placeholder.markdown(f"### {event['script_var']}\\n\\n{scripts[event['script_var']]}")
+        script_placeholder.markdown(f"### {event['script_var']}\n\n{scripts[event['script_var']]}")
 
         current_event_index += 1
     time.sleep(1)
