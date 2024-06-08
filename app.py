@@ -2,6 +2,7 @@ import streamlit as st
 import time
 import plotly.graph_objects as go
 from datetime import date
+import requests
 
 # Define analysis data with placeholder timings for when emotions and scripts should pop up
 analysis_data = {
@@ -113,10 +114,19 @@ selected_audio = st.selectbox("Select an audio file", audio_files)
 # URL to the voices folder in your GitHub repository
 audio_base_url = "https://raw.githubusercontent.com/dePolanball/CS3/main/voices/"
 
-# Check if file exists and play audio
+# Function to download audio file
+def download_audio(file_url, file_name):
+    response = requests.get(file_url)
+    with open(file_name, "wb") as file:
+        file.write(response.content)
+
+# Download the selected audio file
 audio_file_url = f"{audio_base_url}{selected_audio}"
 st.write(f"Loading audio from: {audio_file_url}")  # Debug statement to check the URL
-st.audio(audio_file_url)
+download_audio(audio_file_url, selected_audio)
+
+# Play the downloaded audio file
+st.audio(selected_audio)
 
 duration = analysis_data[selected_audio]["Duration"]
 events = analysis_data[selected_audio]["Events"]
