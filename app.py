@@ -1,8 +1,8 @@
-
 import streamlit as st
 import time
 import plotly.graph_objects as go
 from datetime import date
+import requests
 
 # Define analysis data with placeholder timings for when emotions and scripts should pop up
 analysis_data = {
@@ -114,33 +114,47 @@ selected_audio = st.selectbox("Select an audio file", audio_files)
 # URL to the voices folder in your GitHub repository
 audio_base_url = "https://raw.githubusercontent.com/dePolanball/CS3/main/voices/"
 
-# Check if file exists and play audio
+# Function to download audio file
+def download_audio(file_url, file_name):
+    try:
+        response = requests.get(file_url)
+        response.raise_for_status()  # Check if the request was successful
+        with open(file_name, "wb") as file:
+            file.write(response.content)
+        return True
+    except requests.exceptions.RequestException as e:
+        st.error(f"Error downloading {file_name}: {e}")
+        return False
+
+# Download the selected audio file
 audio_file_url = f"{audio_base_url}{selected_audio}"
 st.write(f"Loading audio from: {audio_file_url}")  # Debug statement to check the URL
-st.audio(audio_file_url)
+if download_audio(audio_file_url, selected_audio):
+    # Play the downloaded audio file
+    st.audio(selected_audio)
 
-duration = analysis_data[selected_audio]["Duration"]
-events = analysis_data[selected_audio]["Events"]
-scripts = analysis_data[selected_audio]["Scripts"]
+    duration = analysis_data[selected_audio]["Duration"]
+    events = analysis_data[selected_audio]["Events"]
+    scripts = analysis_data[selected_audio]["Scripts"]
 
-start_time = time.time()
-current_event_index = 0
+    start_time = time.time()
+    current_event_index = 0
 
-# Initialize dynamic gauge
-gauge_placeholder = st.empty()
-table_placeholder = st.empty()
-script_placeholder = st.empty()
+    # Initialize dynamic gauge
+    gauge_placeholder = st.empty()
+    table_placeholder = st.empty()
+    script_placeholder = st.empty()
 
-# Initialize table data
-table_data = []
-visible_table_data = []
+    # Initialize table data
+    table_data = []
+    visible_table_data = []
 
-for event in events:
-    table_data.append([time.strftime("%M:%S", time.gmtime(event["time"])), event["alert"], event["script_var"]])
+    for event in events:
+        table_data.append([time.strftime("%M:%S", time.gmtime(event["time"])), event["alert"], event["script_var"]])
 
-while time.time() - start_time < duration:
-    elapsed_time = time.time() - start_time
-    if current_event_index < len(events) and elapsed_time >= events[current_event_index]["time"]:
+    # Display table and gauge immediately after loading
+    if events:
+        current_event_index = 0
         event = events[current_event_index]
         gauge_fig = create_gauge(event["alert"])
         gauge_placeholder.plotly_chart(gauge_fig, use_container_width=True)
@@ -150,13 +164,12 @@ while time.time() - start_time < duration:
         table_placeholder.table(visible_table_data)
         script_placeholder.markdown(f"### {event['script_var']}\n\n{scripts[event['script_var']]}")
 
-        current_event_index += 1
-    time.sleep(1)
+    # After audio ends, show a selection box for the user
+    st.write("### Select the outcome of this audio:")
+    outcome = st.selectbox("Outcome", ["Resolved", "Unresolved", "Revert by"])
 
-# After audio ends, show a selection box for the user
-st.write("### Select the outcome of this audio:")
-outcome = st.selectbox("Outcome", ["Resolved", "Unresolved", "Revert by"])
-
-if outcome == "Revert by":
-    revert_date = st.date_input("Select a date to revert by", min_value=date.today())
-    st.write("Revert by date:", revert_date)
+    if outcome == "Revert by":
+        revert_date = st.date_input("Select a date to revert by", min_value=date.today())
+        st.write("Revert by date:", revert_date)
+else:
+    st.error("Failed to load the audio file.")
