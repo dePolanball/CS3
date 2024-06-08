@@ -5,9 +5,6 @@
 from google.colab import drive
 drive.mount('/content/drive')
 
-# Ensure the directory for the voices folder in Google Drive
-voices_dir = "/content/drive/MyDrive/voices "
-
 # Create the Streamlit app script
 app_code = """
 import streamlit as st
@@ -124,7 +121,7 @@ audio_files = list(analysis_data.keys())
 selected_audio = st.selectbox("Select an audio file", audio_files)
 
 # Path to the voices folder in Google Drive
-voices_dir = "/content/drive/MyDrive/voices "
+voices_dir = "/content/drive/MyDrive/Voices/"
 audio_file_path = os.path.join(voices_dir, selected_audio)
 
 # Check if file exists and play audio
@@ -178,4 +175,4 @@ with open("app.py", "w") as f:
     f.write(app_code)
 
 # Run the Streamlit app
-!streamlit run app.py &>/dev/null &
+!streamlit run app.py --server.port 8501 --server.enableCORS false
