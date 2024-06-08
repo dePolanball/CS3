@@ -25,11 +25,11 @@ analysis_data = {
     "audio_1.wav": {
         "Duration": 8 * 60 + 37,  # Duration in seconds (8:37)
         "Events": [
-            {"time": 21, "alert": "Green", "script_var": "Script A"},
-            {"time": 120, "alert": "Light Green", "script_var": "Script B"},
-            {"time": 300, "alert": "Yellow", "script_var": "Script C"},
-            {"time": 480, "alert": "Orange", "script_var": "Script D"},
-            {"time": 600, "alert": "Red", "script_var": "Script E"}
+            {"time": 10, "alert": "Red", "script_var": "Script E"},
+            {"time": 58, "alert": "Orange", "script_var": "Script D"},
+            {"time": 190.8, "alert": "Yellow", "script_var": "Script C"},
+            {"time": 206.4, "alert": "Light Green", "script_var": "Script B"},
+            {"time": 426.6, "alert": "Green", "script_var": "Script A"}
         ],
         "Scripts": {
             "Script A": "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
