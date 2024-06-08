@@ -1,24 +1,20 @@
 # Install necessary packages
 !pip install streamlit requests plotly
 
-# Clone the GitHub repository using personal access token
-token = "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@github.com"
-username = "dePolanball"
-repo_name = "CS3"
+# Mount Google Drive
+from google.colab import drive
+drive.mount('/content/drive')
 
-!git clone https://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@github.com/dePolanball/CS3.git
+# Ensure the directory for the voices folder in Google Drive
+voices_dir = "/content/drive/MyDrive/voices "
 
-# Change directory to the cloned repository
-import os
-os.chdir(repo_name)
-
-# Create app.py file with the provided code
+# Create the Streamlit app script
 app_code = """
 import streamlit as st
 import time
 import plotly.graph_objects as go
 from datetime import date
-import requests
+import os
 
 # Define analysis data with placeholder timings for when emotions and scripts should pop up
 analysis_data = {
@@ -127,69 +123,57 @@ st.title("Customer Service Audio Analysis")
 audio_files = list(analysis_data.keys())
 selected_audio = st.selectbox("Select an audio file", audio_files)
 
-# URL to the voices folder in your GitHub repository
-audio_base_url = "https://raw.githubusercontent.com/dePolanball/CS3/main/voices/"
+# Path to the voices folder in Google Drive
+voices_dir = "/content/drive/MyDrive/voices "
+audio_file_path = os.path.join(voices_dir, selected_audio)
 
-# Function to download audio file
-def download_audio(file_url, file_name):
-    try:
-        response = requests.get(file_url)
-        response.raise_for_status()  # Check if the request was successful
-        with open(file_name, "wb") as file:
-            file.write(response.content)
-        return True
-    except requests.exceptions.RequestException as e:
-        st.error(f"Error downloading {file_name}: {e}")
-        return False
-
-# Download the selected audio file
-audio_file_url = f"{audio_base_url}{selected_audio}"
-st.write(f"Loading audio from: {audio_file_url}")  # Debug statement to check the URL
-if download_audio(audio_file_url, selected_audio):
-    # Play the downloaded audio file
-    st.audio(selected_audio)
-
-    duration = analysis_data[selected_audio]["Duration"]
-    events = analysis_data[selected_audio]["Events"]
-    scripts = analysis_data[selected_audio]["Scripts"]
-
-    start_time = time.time()
-    current_event_index = 0
-
-    # Initialize dynamic gauge
-    gauge_placeholder = st.empty()
-    table_placeholder = st.empty()
-    script_placeholder = st.empty()
-
-    # Initialize table data
-    table_data = []
-    visible_table_data = []
-
-    for event in events:
-        table_data.append([time.strftime("%M:%S", time.gmtime(event["time"])), event["alert"], event["script_var"]])
-
-    # Display table and gauge immediately after loading
-    if events:
-        current_event_index = 0
-        event = events[current_event_index]
-        gauge_fig = create_gauge(event["alert"])
-        gauge_placeholder.plotly_chart(gauge_fig, use_container_width=True)
-
-        # Update table with the current event
-        visible_table_data.append([time.strftime("%M:%S", time.gmtime(event["time"])), event["alert"], event["script_var"]])
-        table_placeholder.table(visible_table_data)
-        script_placeholder.markdown(f"### {event['script_var']}\n\n{scripts[event['script_var']]}")
-
-    # After audio ends, show a selection box for the user
-    st.write("### Select the outcome of this audio:")
-    outcome = st.selectbox("Outcome", ["Resolved", "Unresolved", "Revert by"])
-
-    if outcome == "Revert by":
-        revert_date = st.date_input("Select a date to revert by", min_value=date.today())
-        st.write("Revert by date:", revert_date)
+# Check if file exists and play audio
+if os.path.exists(audio_file_path):
+    st.audio(audio_file_path)
 else:
-    st.error("Failed to load the audio file.")
+    st.error(f"Audio file {selected_audio} not found in Google Drive.")
+
+duration = analysis_data[selected_audio]["Duration"]
+events = analysis_data[selected_audio]["Events"]
+scripts = analysis_data[selected_audio]["Scripts"]
+
+start_time = time.time()
+current_event_index = 0
+
+# Initialize dynamic gauge
+gauge_placeholder = st.empty()
+table_placeholder = st.empty()
+script_placeholder = st.empty()
+
+# Initialize table data
+table_data = []
+visible_table_data = []
+
+for event in events:
+    table_data.append([time.strftime("%M:%S", time.gmtime(event["time"])), event["alert"], event["script_var"]])
+
+# Display table and gauge immediately after loading
+if events:
+    current_event_index = 0
+    event = events[current_event_index]
+    gauge_fig = create_gauge(event["alert"])
+    gauge_placeholder.plotly_chart(gauge_fig, use_container_width=True)
+
+    # Update table with the current event
+    visible_table_data.append([time.strftime("%M:%S", time.gmtime(event["time"])), event["alert"], event["script_var"]])
+    table_placeholder.table(visible_table_data)
+    script_placeholder.markdown(f"### {event['script_var']}\n\n{scripts[event['script_var']]}")
+
+# After audio ends, show a selection box for the user
+st.write("### Select the outcome of this audio:")
+outcome = st.selectbox("Outcome", ["Resolved", "Unresolved", "Revert by"])
+
+if outcome == "Revert by":
+    revert_date = st.date_input("Select a date to revert by", min_value=date.today())
+    st.write("Revert by date:", revert_date)
 """
+
+# Write the app code to a file
 with open("app.py", "w") as f:
     f.write(app_code)
 
