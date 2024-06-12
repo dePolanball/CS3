@@ -36,7 +36,7 @@ analysis_data = {
         "Duration": 2 * 60 + 36,  # Duration in seconds (2:36)
         "Events": [
             {"time": 9, "alert": "Yellow", "script_var": "Script C"},
-            {"time": 113, "alert": "Green", "script_var": "Script A"}
+            {"time": 114, "alert": "Green", "script_var": "Script A"}
         ],
         "Scripts": {
             "Script A": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer nec odio. Praesent libero. Sed cursus ante dapibus diam. Sed nisi. Nulla quis sem at nibh elementum imperdiet. Duis sagittis ipsum. Praesent mauris. Fusce nec tellus sed augue semper porta. Mauris massa. Vestibulum lacinia arcu eget nulla. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Curabitur sodales ligula in libero. Sed dignissim lacinia nunc.",
