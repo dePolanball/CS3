@@ -89,6 +89,16 @@ def create_gauge(alert_type):
 # Streamlit app
 st.title("Customer Service Audio Analysis")
 
+from pydrive.auth import GoogleAuth
+from pydrive.drive import GoogleDrive
+from google.colab import drive
+
+drive.mount('/content/drive')
+gauth = GoogleAuth()
+gauth.LocalWebserverAuth()
+drive = GoogleDrive(gauth)
+
+
 # Dropdown menu for audio selection
 audio_files = list(analysis_data.keys())
 selected_audio = st.selectbox("Select an audio file", audio_files)
